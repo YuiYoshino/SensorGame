@@ -5,7 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-public class Ball { //ボールの表示情報
+public class Ball {
+    //ボールの表示情報
     private int mX = 0;
     // X座標
     private int mY = 0;
