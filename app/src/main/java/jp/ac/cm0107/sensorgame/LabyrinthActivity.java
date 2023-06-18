@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 
 public class LabyrinthActivity extends AppCompatActivity {
@@ -38,5 +39,14 @@ public class LabyrinthActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         manager.unregisterListener(view);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (view.getState() == MapView.GAME_OVER){
+            view.freeHandler();
+            finish();
+        }
+        return true;
     }
 }

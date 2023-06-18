@@ -60,6 +60,8 @@ public class GameMap {
         }
     }
     public int getCellType(int x, int y){
+        if (mTileHeight == 0||mTileWidth ==0)
+            return PATH_TILE;
         int j = x / mTileWidth;
         int i = y / mTileHeight;
         if(i < MAP_ROWS && j < MAP_COLS){

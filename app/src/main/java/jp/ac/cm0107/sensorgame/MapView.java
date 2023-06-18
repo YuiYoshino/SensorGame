@@ -2,11 +2,18 @@ package jp.ac.cm0107.sensorgame;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.os.Handler;
 import android.view.View;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class MapView extends View implements SensorEventListener , Runnable{
     private static final float FILTER_FACTOR = 0.2f;
@@ -25,6 +32,13 @@ public class MapView extends View implements SensorEventListener , Runnable{
     // 画面サイズ
     private int mWidth;
     private int mHeight;
+    public static final int GAME_RUN = 1;
+    public static final int GAME_OVER =2;
+    private long mStartTime = 0;
+    private long mTotalTime = 0;
+    private int state = 0;
+    Paint fullScr = new Paint();
+    Paint message = new Paint();
 
     public MapView(Context context){
         super(context);
@@ -59,6 +73,16 @@ public class MapView extends View implements SensorEventListener , Runnable{
     protected void onDraw(Canvas canvas) {
         map.draw(canvas);
         ball.draw(canvas);
+        if (state == GAME_OVER){
+            fullScr.setColor(0xDD000000);
+            canvas.drawRect(0f,0f,(float) mWidth,(float) mHeight,fullScr);
+
+            message.setColor(Color.GREEN);
+            message.setAntiAlias(true);
+            message.setTextSize(40);
+            message.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("やった！",mWidth/2,mHeight/2,message);
+        }
     }
 
     @Override
@@ -71,12 +95,14 @@ public class MapView extends View implements SensorEventListener , Runnable{
         initGame();
     }
     public void initGame(){
+        mTotalTime = 0;
         ball.setPosition(ball.getRadius()*6, ball.getRadius()*6);
         invalidate();
     }
     public void startGame(){
         mHandler.post(this);
         ball.setPosition(ball.getRadius()*6,ball.getRadius()*6);
+        mStartTime = System.currentTimeMillis();
     }
 
     @Override
@@ -175,9 +201,51 @@ public class MapView extends View implements SensorEventListener , Runnable{
                 mVectorY *= -REBOUND;
             }
         }
+        if(map.getCellType(nextX,nextY)==GameMap.EXIT_TILE){
+            stopGame();
+        }
         ball.move((int)mVectorX, (int) mVectorY);
         invalidate();
         mHandler.removeCallbacks(this);
         mHandler.postDelayed(this,30);
+    }
+    public void stopGame(){
+        state = GAME_OVER;
+        freeHandler();
+        mTotalTime = System.currentTimeMillis() - mStartTime;
+    }
+    public void freeHandler(){
+        if(mHandler != null){
+            mHandler.removeCallbacks(this);
+            mHandler = null;
+        }
+    }
+    public int getState(){
+        return state;
+    }
+    private int[][]loadLabyrinth(int level){
+        final String fileName = "stage" + level +".txt";
+        final int MAZE_ROWS = GameMap.MAP_ROWS;
+        final int MAZE_COLS = GameMap.MAP_COLS;
+        int [][]data = new int[MAZE_ROWS][MAZE_COLS];
+        InputStream is = null;
+        try {
+            is = getContext().getAssets().open(fileName);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line;
+            int i = 0;
+            while((line = reader.readLine())!=null &&i<MAZE_ROWS){
+
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            if (is != null){
+                try {
+                    is.close();
+                }catch (IOException e){}
+            }
+        }
+        return data;
     }
 }
