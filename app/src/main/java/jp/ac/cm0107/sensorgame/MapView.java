@@ -236,7 +236,11 @@ public class MapView extends View implements SensorEventListener , Runnable{
             String line;
             int i = 0;
             while((line = reader.readLine())!=null &&i<MAZE_ROWS){
-
+                String[] lineD = line.split(",");
+                for (int j = 0; j < lineD.length;j++){
+                    data[i][j] = Integer.parseInt(lineD[j].trim());
+                }
+                i++;
             }
         }catch (IOException e){
             e.printStackTrace();

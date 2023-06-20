@@ -45,5 +45,6 @@ public class Ball {
     public void move(int dx, int dy) {
         mX += dx;
         mY += dy;
+
     }
 }
