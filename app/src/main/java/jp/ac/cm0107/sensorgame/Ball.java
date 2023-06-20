@@ -14,9 +14,9 @@ public class Ball {
     private int mRadius = 0; // **
     //ボール描画用
     private Paint mBallPaint;
-    public Ball() {
+    public Ball(int color) {
         mBallPaint = new Paint();
-        mBallPaint.setColor(Color.RED);
+        mBallPaint.setColor(color);
         mBallPaint.setAntiAlias (true);
     }
     public void setPosition(int x, int y) {
