@@ -8,6 +8,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 
 import java.io.BufferedReader;
@@ -32,24 +33,38 @@ public class MapView extends View implements SensorEventListener , Runnable{
     // 画面サイズ
     private int mWidth;
     private int mHeight;
+    private int mTileWidth;
+    private int mTileHeight;
     public static final int GAME_RUN = 1;
     public static final int GAME_OVER =2;
+    public static final int GAME_VOID = 3;
+    private int stageLevel = 3;
     private long mStartTime = 0;
     private long mTotalTime = 0;
     private int state = 0;
     Paint fullScr = new Paint();
     Paint message = new Paint();
+    private int saveColor;
+    private int firstOUT_x ;
+    private int firstOUT_y ;
+    private int secondOUT_x ;
+    private int secondOUT_y ;
+
 
     public MapView(Context context, int color){
         super(context);
-        init(color);
+        saveColor = color;
+        init();
     }
-    private void init(int color){
+    private void init(){
         mHandler = new Handler();
         map = new GameMap();
-        ball = new Ball(color);
+        ball = new Ball(saveColor);
 
-        int[][] data = loadLabyrinth(1);
+        load();
+    }
+    private void load(){
+        int[][] data = loadLabyrinth(stageLevel);
         map.setData(data);
     }
 
@@ -58,6 +73,22 @@ public class MapView extends View implements SensorEventListener , Runnable{
         map.draw(canvas);
         ball.draw(canvas);
         if (state == GAME_OVER){
+            if (stageLevel == 3) {
+                fullScr.setColor(0xDD000000);
+                canvas.drawRect(0f, 0f, (float) mWidth, (float) mHeight, fullScr);
+
+                message.setColor(Color.GREEN);
+                message.setAntiAlias(true);
+                message.setTextSize(40);
+                message.setTextAlign(Paint.Align.CENTER);
+                canvas.drawText("やった！", mWidth / 2, mHeight / 2, message);
+            }else {
+                state = GAME_RUN;
+                ball.setPosition(ball.getRadius()*6,ball.getRadius()*6);
+                stageLevel ++;
+                load();
+            }
+        } else if (state ==GAME_VOID) {
             fullScr.setColor(0xDD000000);
             canvas.drawRect(0f,0f,(float) mWidth,(float) mHeight,fullScr);
 
@@ -65,16 +96,24 @@ public class MapView extends View implements SensorEventListener , Runnable{
             message.setAntiAlias(true);
             message.setTextSize(40);
             message.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText("やった！",mWidth/2,mHeight/2,message);
+            canvas.drawText("アウト！",mWidth/2,mHeight/2,message);
+
         }
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+
         mWidth = w;
         mHeight = h;
+        mTileWidth = w / GameMap.MAP_COLS;
+        mTileHeight = h / GameMap.MAP_ROWS;
+        Log.i("zzzzzzz3", "x:" + map.getmTileWidth() + " y:" + map.getmTileHeight());
+
         map.setSize(w, h);
+        Log.i("zzzzzzz4", "x:" + map.getmTileWidth() + " y:" + map.getmTileHeight());
+
         ball.setRadius(w/(2*GameMap.MAP_COLS));
         initGame();
     }
@@ -186,7 +225,23 @@ public class MapView extends View implements SensorEventListener , Runnable{
             }
         }
         if(map.getCellType(nextX,nextY)==GameMap.EXIT_TILE){
+            state = GAME_OVER;
             stopGame();
+        }
+        if(map.getCellType(nextX,nextY)==GameMap.VOID_TILE){
+            state=GAME_VOID;
+            stopGame();
+        }
+        if(map.getCellType(nextX,nextY)==GameMap.IN_first_TILE){
+            Log.i("zzzzzzz", "x:" + firstOUT_x + " y:" + firstOUT_y);
+            firstOUT_x = firstOUT_x * map.getmTileHeight();
+            firstOUT_y = firstOUT_y * map.getmTileWidth();
+            ball.setPosition(firstOUT_x,firstOUT_y);
+        }
+        if(map.getCellType(nextX,nextY)==GameMap.IN_second_TILE){
+            secondOUT_x = secondOUT_x * map.getmTileHeight();
+            secondOUT_y = secondOUT_y * map.getmTileWidth();
+            ball.setPosition(secondOUT_x,secondOUT_y);
         }
         ball.move((int)mVectorX, (int) mVectorY);
         invalidate();
@@ -194,8 +249,9 @@ public class MapView extends View implements SensorEventListener , Runnable{
         mHandler.postDelayed(this,30);
     }
     public void stopGame(){
-        state = GAME_OVER;
-        freeHandler();
+        //state = GAME_OVER;
+        //freeHandler();
+        mHandler.removeCallbacks(this);
         mTotalTime = System.currentTimeMillis() - mStartTime;
     }
     public void freeHandler(){
@@ -225,6 +281,7 @@ public class MapView extends View implements SensorEventListener , Runnable{
         return data;
     }
     private int[][]loadLabyrinth(int level){
+
         final String fileName = "stage" + level +".csv";
         final int MAZE_ROWS = GameMap.MAP_ROWS;
         final int MAZE_COLS = GameMap.MAP_COLS;
@@ -239,6 +296,14 @@ public class MapView extends View implements SensorEventListener , Runnable{
                 String[] lineD = line.split(",");
                 for (int j = 0; j < lineD.length;j++){
                     data[i][j] = Integer.parseInt(lineD[j].trim());
+                    if (Integer.parseInt(lineD[j].trim())==GameMap.OUT_first_TILE){
+                        firstOUT_x = i + 1;
+                        firstOUT_y = j + 1;
+                    }
+                    if (Integer.parseInt(lineD[j].trim())==GameMap.OUT_second_TILE){
+                        secondOUT_x = i + 1;
+                        secondOUT_y = j + 1;
+                    }
                 }
                 i++;
             }

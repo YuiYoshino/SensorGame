@@ -10,22 +10,48 @@ public class GameMap {
     public final static int WALL_TILE = 1;
     public final static int EXIT_TILE = 2;
     public final static int VOID_TILE = 3;
+    public final static int IN_first_TILE = 4;
+    public final static int OUT_first_TILE = 5;
+    public final static int IN_second_TILE = 6;
+    public final static int OUT_second_TILE = 7;
+
+
     public final static int MAP_ROWS = 32;
     public final static int MAP_COLS = 20;
     private int [][] mData;
     private int mTileWidth;
+
+    public int getmTileWidth() {
+        return mTileWidth;
+    }
+
+    public int getmTileHeight() {
+        return mTileHeight;
+    }
+
     private int mTileHeight;
     private Paint mPathPaint = new Paint();
     private Paint mWallPaint = new Paint();
     private Paint mExitPaint = new Paint();
     private Paint mVoidPaint = new Paint();
 
+
+    private Paint mFirstINPaint = new Paint();
+    private Paint mFirstOUTPaint = new Paint();
+    private Paint mSecondINPaint = new Paint();
+    private Paint mSecondOUTPaint = new Paint();
+
+
     public GameMap() {
         mData = new int[MAP_ROWS][MAP_COLS];
         mPathPaint.setColor(Color.BLACK);
         mWallPaint.setColor(Color.WHITE);
-        mWallPaint.setColor(Color.CYAN);
+        mExitPaint.setColor(Color.CYAN);
         mVoidPaint.setColor(Color.YELLOW);
+        mFirstINPaint.setColor(Color.GRAY);
+        mFirstOUTPaint.setColor(Color.GRAY);
+        mSecondINPaint.setColor(Color.MAGENTA);
+        mSecondOUTPaint.setColor(Color.MAGENTA);
     }
     public void setData(int [][] data){
         mData = data;
@@ -54,6 +80,18 @@ public class GameMap {
                         break;
                     case VOID_TILE:
                         canvas.drawRect(x, y, width, height, mVoidPaint);
+                        break;
+                    case IN_first_TILE:
+                        canvas.drawRect(x, y, width, height, mFirstINPaint);
+                        break;
+                    case OUT_first_TILE:
+                        canvas.drawRect(x, y, width, height, mFirstOUTPaint);
+                        break;
+                    case IN_second_TILE:
+                        canvas.drawRect(x, y, width, height, mSecondINPaint);
+                        break;
+                    case OUT_second_TILE:
+                        canvas.drawRect(x, y, width, height, mSecondOUTPaint);
                         break;
                 }
             }

@@ -61,7 +61,7 @@ public class LabyrinthActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (view.getState() == MapView.GAME_OVER){
+        if (view.getState() == MapView.GAME_OVER || view.getState() == MapView.GAME_VOID){
             view.freeHandler();
             finish();
         }

@@ -11,7 +11,7 @@ public class Ball {
     // X座標
     private int mY = 0;
     // Y座標
-    private int mRadius = 0; // **
+    private int mRadius = 0;
     //ボール描画用
     private Paint mBallPaint;
     public Ball(int color) {
