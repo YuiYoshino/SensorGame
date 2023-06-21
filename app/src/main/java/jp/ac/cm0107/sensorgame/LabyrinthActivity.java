@@ -13,31 +13,18 @@ import android.view.WindowManager;
 public class LabyrinthActivity extends AppCompatActivity {
     private MapView view = null;
     private SensorManager manager;
-    private int pos;
+    private int color;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // setContentView(R.layout.activity_labyrinth);
-
-        Intent intent = getIntent();
-        pos = intent.getIntExtra("pos",0);
-        int color = 0;
-        switch (pos){
-            case 0:
-                color = Color.GREEN;
-                break;
-            case 1:
-                color = Color.RED;
-                break;
-            case 2:
-                color = Color.BLUE;
-                break;
-        }
-
         getSupportActionBar().hide();
         getWindow().addFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        Intent intent = getIntent();
+        color = intent.getIntExtra("color",Color.RED);
+
         view = new MapView(this,color);
         setContentView(view);
         manager = (SensorManager) getSystemService(SENSOR_SERVICE);
