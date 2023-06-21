@@ -7,11 +7,18 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <Spinner
+        android:id="@+id/spnColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/color"
+        android:spinnerMode="dropdown" />
+
     <ImageButton
         android:id="@+id/imgStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:srcCompat="@android:drawable/editbox_background_normal"
-        android:background="@null"/>
+        android:background="@null"
+        app:srcCompat="@android:drawable/editbox_background_normal" />
 
 </LinearLayout>

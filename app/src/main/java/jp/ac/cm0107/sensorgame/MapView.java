@@ -40,33 +40,17 @@ public class MapView extends View implements SensorEventListener , Runnable{
     Paint fullScr = new Paint();
     Paint message = new Paint();
 
-    public MapView(Context context){
+    public MapView(Context context, int color){
         super(context);
-        init();
+        init(color);
     }
-    private void init(){
+    private void init(int color){
         mHandler = new Handler();
         map = new GameMap();
-        ball = new Ball();
+        ball = new Ball(color);
 
-        int[][] data = makeTestData();
+        int[][] data = loadLabyrinth(1);
         map.setData(data);
-    }
-    // テストデータ生成
-    private int[][] makeTestData(){
-        int[][] data = new int[32][20];
-        for (int i = 0; i < data.length; i++) {
-            for (int j = 0; j < data[i].length; j++) {
-                if( i == 0 || i == data.length - 1 ||
-                        j == 0 || j == data[i].length - 1){
-                    data[i][j] = 1; // 壁
-                }else{
-                    data[i][j] = 0; // 通路
-                }
-            }
-        }
-        data[3][8] = 2;
-        return data;
     }
 
     @Override
@@ -223,8 +207,25 @@ public class MapView extends View implements SensorEventListener , Runnable{
     public int getState(){
         return state;
     }
+
+    // テストデータ生成
+    private int[][] makeTestData(){
+        int[][] data = new int[32][20];
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if( i == 0 || i == data.length - 1 ||
+                        j == 0 || j == data[i].length - 1){
+                    data[i][j] = 1; // 壁
+                }else{
+                    data[i][j] = 0; // 通路
+                }
+            }
+        }
+        data[3][8] = 2;
+        return data;
+    }
     private int[][]loadLabyrinth(int level){
-        final String fileName = "stage" + level +".txt";
+        final String fileName = "stage" + level +".csv";
         final int MAZE_ROWS = GameMap.MAP_ROWS;
         final int MAZE_COLS = GameMap.MAP_COLS;
         int [][]data = new int[MAZE_ROWS][MAZE_COLS];
@@ -235,7 +236,11 @@ public class MapView extends View implements SensorEventListener , Runnable{
             String line;
             int i = 0;
             while((line = reader.readLine())!=null &&i<MAZE_ROWS){
-
+                String[] lineD = line.split(",");
+                for (int j = 0; j < lineD.length;j++){
+                    data[i][j] = Integer.parseInt(lineD[j].trim());
+                }
+                i++;
             }
         }catch (IOException e){
             e.printStackTrace();
