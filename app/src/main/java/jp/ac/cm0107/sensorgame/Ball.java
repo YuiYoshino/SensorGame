@@ -2,7 +2,6 @@ package jp.ac.cm0107.sensorgame;
 
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 
 public class Ball {
